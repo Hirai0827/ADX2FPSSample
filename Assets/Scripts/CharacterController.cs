@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Timers;
 using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -20,7 +21,9 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private ParticleSystem shotParticle;
     [SerializeField] private GunAnimator gunAnimator;
     [SerializeField] private PlayerUIPresenter playerUIPresenter;
+    [SerializeField] private AudioSource footStepSound;
     private float coolDownTime;
+    private float stepCoolDownTime;
     
     
     [SerializeField]
@@ -78,6 +81,7 @@ public class CharacterController : MonoBehaviour
     private void Move()
     {
         float moveSpeed = 5.0f;
+        
         var forceVector = new Vector3();
         if (Input.GetKey(KeyCode.W))
         {
@@ -104,8 +108,19 @@ public class CharacterController : MonoBehaviour
             rigidbody.velocity = Vector3.up * rigidbody.velocity.y;
             return;
         }
+
+        if (forceVector.y == 0)
+        {
+            coolDownTime -= Time.deltaTime;
+            if (coolDownTime < 0.0f)
+            {
+                coolDownTime = 0.5f;
+                footStepSound.Play();
+            }
+        }
         gunAnimator.SetSwingingAmount(1.0f);
         forceVector.Normalize();
+        
         rigidbody.velocity = cameraTransformY.rotation * forceVector * moveSpeed + rigidbody.velocity.y * Vector3.up;
         if (ladderController.IsOnLadder)
         {
