@@ -10,13 +10,15 @@ public class GunAnimator : MonoBehaviour
     private bool isShooting;
     private bool isReloading;
     private float swingAmount;
-    [SerializeField]
-    private Transform gunTransform;
-    [SerializeField]
-    private Vector3 stayingGunPos;
-    [SerializeField]
-    private Vector3 aimingGunPos;
+    [SerializeField] private Transform gunTransform;
+    [SerializeField] private Vector3 stayingGunPos;
+    [SerializeField] private Vector3 aimingGunPos;
+    [SerializeField] private Vector3 stayGunRot;
 
+    [SerializeField] private Vector3 reloadGunPos;
+
+    [SerializeField] private Vector3 reloadGunRot;
+    
     [SerializeField] private Vector3 shotDelta;
 
     [SerializeField] private float aimingDuration;
@@ -28,6 +30,7 @@ public class GunAnimator : MonoBehaviour
     [SerializeField] private float swingAttenuation;
     private float shotTime;
     private float aimingTime;
+    private float reloadTime;
     private Vector3 recoil;
     void FixedUpdate()
     {
@@ -52,12 +55,30 @@ public class GunAnimator : MonoBehaviour
         {
             aimingTime -= Time.deltaTime;
         }
+        if (isReloading)
+        {
+            reloadTime += Time.deltaTime;
+            if (reloadTime > 2.0f)
+            {
+                isReloading = false;
+                reloadTime = 0.25f;
+            }
+        }
+        else
+        {
+            reloadTime -= Time.deltaTime;
+            
+        }
 
+        reloadTime = Mathf.Max(0.0f, reloadTime);
         aimingTime = Mathf.Min(aimingDuration, Mathf.Max(0f, aimingTime));
         var aimT = aimingTime / aimingDuration;
         var pos = Vector3.Lerp(stayingGunPos, aimingGunPos, 1.0f - (1.0f - aimT)*(1.0f - aimT));
         pos += delta + recoil;
+        pos = Vector3.Lerp(pos,reloadGunPos,Mathf.Clamp01(reloadTime * 4.0f));
+        var rot = Vector3.Lerp(stayGunRot, reloadGunRot, Mathf.Clamp01(reloadTime * 4.0f));
         gunTransform.localPosition = pos;
+        gunTransform.localEulerAngles = rot;
         recoil *= recoilAttenuation;
         swingAmount *= swingAttenuation;
     }
@@ -85,6 +106,11 @@ public class GunAnimator : MonoBehaviour
     {
         
         isReloading = true;
+    }
+
+    public void RestoreFromReload()
+    {
+        isReloading = false;
     }
 
     public void SetSwingingAmount(float swingAmount)

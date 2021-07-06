@@ -24,6 +24,7 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private AudioSource footStepSound;
     private float coolDownTime;
     private float stepCoolDownTime;
+    private float reloadTime;
     private float rotX;
     private float rotY;
     
@@ -39,14 +40,21 @@ public class CharacterController : MonoBehaviour
         rigidbody = this.gameObject.GetComponent<Rigidbody>();
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-
     }
+    
 
     private void Update()
     {
         Move();
         Rotate();
         Jump();
+        swingAmount = Mathf.Max( 0.0f,swingAmount-Time.deltaTime * 2.0f);
+        if (reloadTime > 0.0f)
+        {
+            reloadTime -= Time.deltaTime;
+            return;
+        }
+        gunAnimator.RestoreFromReload();
         coolDownTime -= Time.deltaTime;
         //Swing();
         if (Input.GetMouseButton(0) && currentBullet != 0 && coolDownTime < 0.0f)
@@ -68,8 +76,6 @@ public class CharacterController : MonoBehaviour
         {
             Reload();
         }
-
-        swingAmount = Mathf.Max( 0.0f,swingAmount-Time.deltaTime * 2.0f);
     }
 
     private void Rotate()
@@ -161,6 +167,8 @@ public class CharacterController : MonoBehaviour
     private void Reload()
     {
         currentBullet = maxBullet;
+        gunAnimator.MoveToReload();
+        reloadTime = 2.0f;
         playerUIPresenter.UpdateBullet(currentBullet,maxBullet);
     }
 }
