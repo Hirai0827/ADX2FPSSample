@@ -24,6 +24,8 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private AudioSource footStepSound;
     private float coolDownTime;
     private float stepCoolDownTime;
+    private float rotX;
+    private float rotY;
     
     
     [SerializeField]
@@ -73,9 +75,12 @@ public class CharacterController : MonoBehaviour
     private void Rotate()
     {
         var mouseMoveX = Input.GetAxis("Mouse X");
-        cameraTransformY.localRotation = Quaternion.Euler(0, 3 * mouseMoveX, 0) * cameraTransformY.localRotation;
+        rotX += mouseMoveX * 2.0f;
+        cameraTransformY.localRotation = Quaternion.Euler(0, rotX, 0) * Quaternion.LookRotation(Vector3.forward);
         var mouseMoveY = Input.GetAxis("Mouse Y");
-        cameraTransformX.localRotation = Quaternion.Euler(-3 * mouseMoveY, 0, 0) * cameraTransformX.localRotation;
+        rotY += mouseMoveY * -2.0f;
+        rotY = Mathf.Clamp(rotY,-90.0f,90f);
+        cameraTransformX.localRotation = Quaternion.Euler(rotY, 0, 0) * Quaternion.LookRotation(Vector3.forward);
         
     }
     private void Move()
@@ -111,10 +116,10 @@ public class CharacterController : MonoBehaviour
 
         if (forceVector.y == 0)
         {
-            coolDownTime -= Time.deltaTime;
-            if (coolDownTime < 0.0f)
+            stepCoolDownTime -= Time.deltaTime;
+            if (stepCoolDownTime < 0.0f)
             {
-                coolDownTime = 0.5f;
+                stepCoolDownTime = 0.5f;
                 footStepSound.Play();
             }
         }
