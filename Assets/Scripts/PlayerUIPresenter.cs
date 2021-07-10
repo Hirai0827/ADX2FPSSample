@@ -10,6 +10,7 @@ namespace DefaultNamespace
         [SerializeField] private Text currentTimeText;
         [SerializeField] private Text currentScoreText;
         [SerializeField] private Text currentStageText;
+        [SerializeField] private GameObject gameClearObject;
 
         public void UpdateBullet(int currentBullet,int maxBullet)
         {
@@ -24,6 +25,11 @@ namespace DefaultNamespace
         public void UpdateStage(string stageName)
         {
             currentStageText.text = stageName;
+        }
+
+        public void GameClear()
+        {
+            gameClearObject.SetActive(true);
         }
     }
 }

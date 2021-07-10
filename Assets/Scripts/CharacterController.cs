@@ -22,6 +22,7 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private GunAnimator gunAnimator;
     [SerializeField] private PlayerUIPresenter playerUIPresenter;
     [SerializeField] private AudioSource footStepSound;
+    [SerializeField] private AudioSource reloadSound;
     private float coolDownTime;
     private float stepCoolDownTime;
     private float reloadTime;
@@ -54,7 +55,6 @@ public class CharacterController : MonoBehaviour
             reloadTime -= Time.deltaTime;
             return;
         }
-        gunAnimator.RestoreFromReload();
         coolDownTime -= Time.deltaTime;
         //Swing();
         if (Input.GetMouseButton(0) && currentBullet != 0 && coolDownTime < 0.0f)
@@ -167,8 +167,14 @@ public class CharacterController : MonoBehaviour
     private void Reload()
     {
         currentBullet = maxBullet;
+        reloadSound.Play();
         gunAnimator.MoveToReload();
         reloadTime = 2.0f;
         playerUIPresenter.UpdateBullet(currentBullet,maxBullet);
+    }
+
+    public void GameClear()
+    {
+        playerUIPresenter.GameClear();
     }
 }

@@ -108,11 +108,6 @@ public class GunAnimator : MonoBehaviour
         isReloading = true;
     }
 
-    public void RestoreFromReload()
-    {
-        isReloading = false;
-    }
-
     public void SetSwingingAmount(float swingAmount)
     {
         this.swingAmount = swingAmount;
