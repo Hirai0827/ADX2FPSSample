@@ -514,6 +514,7 @@ MonoBehaviour:
   currentTimeText: {fileID: 0}
   currentScoreText: {fileID: 435385920}
   currentStageText: {fileID: 1912046941}
+  gameClearObject: {fileID: 2466347800898598961}
 --- !u!1 &4256119291823491002
 GameObject:
   m_ObjectHideFlags: 0
